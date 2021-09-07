@@ -2,18 +2,25 @@ import copy
 
 
 class Rectangle:
-    def __init__(self, square, height, width, correct_x=0, correct_y=0):
+    def __init__(self, square, height, width, correct_i=0, correct_j=0):
         self.square = square
         self.height = height
         self.width = width
-        self.pos_x = correct_x
-        self.pos_y = correct_y
+        self.pos_i = correct_i
+        self.pos_j = correct_j
 
     def __str__(self):
-        return f'{self.square},{self.height},{self.width}'
+        return f'{self.square},{self.height},{self.width}, {self.pos_i}, {self.pos_j}'
 
     def __repr__(self):
-        return f'{self.height},{self.width}:({self.pos_x}, {self.pos_y})'
+        return f'{self.height},{self.width}:({self.pos_i}, {self.pos_j})'
+
+    def __eq__(self, other):
+        h_is_eq = self.height == other.height
+        w_is_eq = self.width == other.width
+        i_is_eq = self.pos_i == other.pos_i
+        j_is_eq = self.pos_j == other.pos_j
+        return h_is_eq and w_is_eq and i_is_eq and j_is_eq
 
     def is_correct(self, field, x, y):
         digit = True
@@ -43,8 +50,10 @@ class Rectangle:
         return result
 
 
-def field_update(field, rectangle, i, j):
+def field_update(field, rectangle):
     width, height = rectangle.width, rectangle.height
+    i = rectangle.pos_i
+    j = rectangle.pos_j
     for k in range(height):
         for m in range(width):
             field[i + k][j + m] = '+'
@@ -80,13 +89,15 @@ def get_rectangles(field_size):
 
 
 def find_solve(rectangles, stack):
+    result = []
     while stack:
         g, solve = stack.pop(0)
         if not has_digit(g):
             if is_solved(g):
-                print(g)
-                print(is_solved(g))
-                print(solve)
+                # print(g)
+                # print(is_solved(g))
+                # print(solve)
+                result.append(solve)
         for i in range(len(g)):
             for j in range(len(g)):
                 if g[i][j].isdigit():
@@ -98,9 +109,7 @@ def find_solve(rectangles, stack):
                                 h = copy.deepcopy(solve)
                                 h.append(rectangle)
                                 new_field = field_update(copy.deepcopy(g),
-                                                         rectangle,
-                                                         rectangle.pos_x,
-                                                         rectangle.pos_y)
+                                                         rectangle)
                                 stack.insert(0, (new_field, h))
                     break
                 else:
@@ -108,6 +117,7 @@ def find_solve(rectangles, stack):
             else:
                 continue
             break
+    return result
 
 
 if __name__ == '__main__':
@@ -115,4 +125,4 @@ if __name__ == '__main__':
         puzzle = file.read().split('\n')
         puzzle = [s.split(' ') for s in puzzle]
     figures = get_rectangles(len(puzzle))
-    find_solve(figures, [(puzzle, [])])
+    print(find_solve(figures, [(puzzle, [])]))
