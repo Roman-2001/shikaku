@@ -6,34 +6,34 @@ class TestSolution(unittest.TestCase):
     def test_field_has_digit(self):
         field = [['2', '-'],
                  ['-', '2']]
-        self.assertEqual(True, solution.has_digit(field))
+        self.assertTrue(solution.has_digit(field))
 
     def test_field_has_not_digit(self):
         field = [['+', '+'],
                  ['+', '+']]
-        self.assertEqual(False, solution.has_digit(field))
+        self.assertFalse(solution.has_digit(field))
 
     def test_field_is_solved(self):
         field = [['+', '+'],
                  ['+', '+']]
-        self.assertEqual(True, solution.is_solved(field))
+        self.assertTrue(solution.is_solved(field))
 
     def test_field_is_not_solved(self):
         field = [['2', '-'],
                  ['-', '2']]
-        self.assertEqual(False, solution.is_solved(field))
+        self.assertFalse(solution.is_solved(field))
 
     def test_rectangle_is_correct(self):
         field = [['2', '2'],
                  ['-', '-']]
         rectangle = solution.Rectangle(2, 2, 1, 0, 0)
-        self.assertEqual(True, solution.Rectangle.is_correct(rectangle, field, 0, 0))
+        self.assertTrue(solution.Rectangle.is_correct(rectangle, field, 0, 0))
 
     def test_rectangle_is_not_correct(self):
         field = [['2', '2'],
                  ['-', '-']]
         rectangle = solution.Rectangle(2, 1, 2, 0, 0)
-        self.assertEqual(False, solution.Rectangle.is_correct(rectangle, field, 0, 0))
+        self.assertFalse(solution.Rectangle.is_correct(rectangle, field, 0, 0))
 
     def test_rectangle_find_correct_position(self):
         field = [['2', '2'],
@@ -59,7 +59,7 @@ class TestSolution(unittest.TestCase):
         expected_answer = {1: [solution.Rectangle(1, 1, 1)],
                            2: [solution.Rectangle(2, 1, 2), solution.Rectangle(2, 2, 1)],
                            4: [solution.Rectangle(4, 2, 2)]}
-        self.assertEqual(expected_answer, solution.get_rectangles(len(field)))
+        self.assertCountEqual(expected_answer, solution.get_rectangles(len(field)))
 
     def test_find_one_solve(self):
         field = [['2', '2'],
@@ -67,7 +67,7 @@ class TestSolution(unittest.TestCase):
         stack = [(field, [])]
         rectangles = solution.get_rectangles(len(field))
         expected_answer = [[solution.Rectangle(2, 2, 1, 0, 0), solution.Rectangle(2, 2, 1, 0, 1)]]
-        self.assertEqual(expected_answer, solution.find_solve(rectangles, stack))
+        self.assertCountEqual(expected_answer, solution.find_solve(rectangles, stack))
 
     def test_find_many_solve(self):
         field = [['2', '-'],
@@ -76,7 +76,7 @@ class TestSolution(unittest.TestCase):
         rectangles = solution.get_rectangles(len(field))
         expected_answer = [[solution.Rectangle(2, 2, 1, 0, 0), solution.Rectangle(2, 2, 1, 0, 1)],
                            [solution.Rectangle(2, 1, 2, 0, 0), solution.Rectangle(2, 1, 2, 1, 0)]]
-        self.assertEqual(expected_answer, solution.find_solve(rectangles, stack))
+        self.assertCountEqual(expected_answer, solution.find_solve(rectangles, stack))
 
     def test_find_no_solve(self):
         field = [['2', '2'],
