@@ -8,12 +8,13 @@ class Rectangle:
         self.width = width
         self.pos_i = correct_i
         self.pos_j = correct_j
+        self.id = -1
 
     def __str__(self):
         return f'{self.square},{self.height},{self.width}, {self.pos_i}, {self.pos_j}'
 
     def __repr__(self):
-        return f'{self.height},{self.width}:({self.pos_i}, {self.pos_j})'
+        return f'{self.height},{self.width}; {self.id}:({self.pos_i}, {self.pos_j})'
 
     def __eq__(self, other):
         h_is_eq = self.height == other.height
@@ -28,7 +29,7 @@ class Rectangle:
             if i + x >= len(field) or i + x < 0:
                 return False
             for j in range(self.width):
-                if j + y < 0 or j + y >= len(field):
+                if j + y < 0 or j + y >= len(field[i]):
                     return False
                 if field[i+x][j+y] == '-':
                     continue
@@ -50,6 +51,17 @@ class Rectangle:
         return result
 
 
+def field_is_correct(field):
+    width = -1
+    for i in range(len(field)):
+        if width == -1:
+            width = len(field[i])
+        else:
+            if width != len(field[i]):
+                return False
+    return True
+
+
 def field_update(field, rectangle):
     width, height = rectangle.width, rectangle.height
     i = rectangle.pos_i
@@ -62,7 +74,7 @@ def field_update(field, rectangle):
 
 def has_digit(field):
     for i in range(len(field)):
-        for j in range(len(field)):
+        for j in range(len(field[i])):
             if field[i][j].isdigit():
                 return True
     return False
@@ -70,16 +82,20 @@ def has_digit(field):
 
 def is_solved(field):
     for i in range(len(field)):
-        for j in range(len(field)):
+        for j in range(len(field[i])):
             if field[i][j] != '+':
                 return False
     return True
 
 
-def get_rectangles(field_size):
+def get_rectangles(field):
     rectangles = {}
-    for i in range(field_size):
-        for j in range(field_size):
+    if type(field[0]) is list:
+        width = len(field[0])
+    else:
+        width = 1
+    for i in range(len(field)):
+        for j in range(width):
             square = (i+1)*(j+1)
             if square in rectangles.keys():
                 rectangles[square].append(Rectangle(square, i+1, j+1))
@@ -92,6 +108,7 @@ def find_solve(rectangles, stack):
     result = []
     while stack:
         g, solve = stack.pop(0)
+        id = len(solve)
         if not has_digit(g):
             if is_solved(g):
                 # print(g)
@@ -99,18 +116,18 @@ def find_solve(rectangles, stack):
                 # print(solve)
                 result.append(solve)
         for i in range(len(g)):
-            for j in range(len(g)):
+            for j in range(len(g[i])):
                 if g[i][j].isdigit():
                     sq = int(g[i][j])
                     for e in rectangles[sq]:
                         correct_rectangles = e.find_correct_positions(g, i, j)
-                        if len(correct_rectangles) > 0:
-                            for rectangle in correct_rectangles:
-                                h = copy.deepcopy(solve)
-                                h.append(rectangle)
-                                new_field = field_update(copy.deepcopy(g),
-                                                         rectangle)
-                                stack.insert(0, (new_field, h))
+                        for rectangle in correct_rectangles:
+                            h = copy.deepcopy(solve)
+                            rectangle.id = id
+                            h.append(rectangle)
+                            new_field = field_update(copy.deepcopy(g),
+                                                     rectangle)
+                            stack.insert(0, (new_field, h))
                     break
                 else:
                     continue
@@ -120,9 +137,37 @@ def find_solve(rectangles, stack):
     return result
 
 
+def print_solve(field, solve):
+    for r in solve:
+        for i in range(r.height):
+            for j in range(r.width):
+                field[r.pos_i + i][r.pos_j + j] = str(r.id)
+    temp = alignment_solve(field)
+    result = [' '.join(s) for s in temp]
+    print('\n'.join(result))
+
+
+def alignment_solve(tmp):
+    for j in range(1, len(tmp[0]) + 1):
+        size = len(tmp[-1][-j])
+        for i in range(2, len(tmp) + 1):
+            if len(tmp[-i][-j]) < size:
+                tmp[-i][-j] = ' ' * (size - len(tmp[-i][-j])) + tmp[-i][-j]
+    return tmp
+
+
 if __name__ == '__main__':
-    with open('in.txt', 'r') as file:
-        puzzle = file.read().split('\n')
-        puzzle = [s.split(' ') for s in puzzle]
-    figures = get_rectangles(len(puzzle))
-    print(find_solve(figures, [(puzzle, [])]))
+    try:
+        file = open('in.txt', 'r')
+        puzzle = [s.split(' ') for s in file.read().split('\n')]
+        if not field_is_correct(puzzle):
+            raise Warning
+        figures = get_rectangles(puzzle)
+        solves = find_solve(figures, [(puzzle, [])])
+        for s in solves:
+            print_solve(copy.deepcopy(puzzle), s)
+        file.close()
+    except FileNotFoundError:
+        print('File with field is not found')
+    except Warning:
+        print('Field is not rectangular')
