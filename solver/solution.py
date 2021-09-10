@@ -1,4 +1,5 @@
 import copy
+from typing import List, Dict, Tuple
 
 
 class Rectangle:
@@ -10,20 +11,22 @@ class Rectangle:
         self.pos_j = correct_j
         self.id = -1
 
-    def __str__(self):
-        return f'{self.square},{self.height},{self.width}, {self.pos_i}, {self.pos_j}'
+    def __str__(self) -> str:
+        return f'{self.square}, {self.height}, {self.width}, ' \
+               f'{self.pos_i}, {self.pos_j}'
+    #
+    # def __repr__(self) -> str:
+    #     return f'{self.height},{self.width}; {self.id}' \
+    #            f':({self.pos_i}, {self.pos_j})'
 
-    def __repr__(self):
-        return f'{self.height},{self.width}; {self.id}:({self.pos_i}, {self.pos_j})'
-
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         h_is_eq = self.height == other.height
         w_is_eq = self.width == other.width
         i_is_eq = self.pos_i == other.pos_i
         j_is_eq = self.pos_j == other.pos_j
         return h_is_eq and w_is_eq and i_is_eq and j_is_eq
 
-    def is_correct(self, field, x, y):
+    def is_correct(self, field, x, y) -> bool:
         digit = True
         for i in range(self.height):
             if i + x >= len(field) or i + x < 0:
@@ -40,7 +43,7 @@ class Rectangle:
                     return False
         return True
 
-    def find_correct_positions(self, field, i, j):
+    def find_correct_positions(self, field: list, i: int, j: int):
         result = []
         for k in range(-self.height + 1, 1):
             for m in range(-self.width + 1, 1):
@@ -51,7 +54,7 @@ class Rectangle:
         return result
 
 
-def field_is_correct(field):
+def field_is_correct(field: List[List[str]]):
     width = -1
     for i in range(len(field)):
         if width == -1:
@@ -62,7 +65,7 @@ def field_is_correct(field):
     return True
 
 
-def field_update(field, rectangle):
+def field_update(field: List[List[str]], rectangle: Rectangle):
     width, height = rectangle.width, rectangle.height
     i = rectangle.pos_i
     j = rectangle.pos_j
@@ -88,7 +91,8 @@ def is_solved(field):
     return True
 
 
-def get_rectangles(field):
+def get_rectangles(field: List[List[str]])\
+        -> Dict[int, List[Rectangle]]:
     rectangles = {}
     if type(field[0]) is list:
         width = len(field[0])
@@ -104,11 +108,13 @@ def get_rectangles(field):
     return rectangles
 
 
-def find_solve(rectangles, stack):
+def find_solve(rectangles: Dict[int, List[Rectangle]],
+               stack: List[Tuple[List[List[str]], list]])\
+        -> List[List[Rectangle]]:
     result = []
     while stack:
         g, solve = stack.pop(0)
-        id = len(solve)
+        rectangle_id = len(solve)
         if not has_digit(g):
             if is_solved(g):
                 # print(g)
@@ -123,7 +129,7 @@ def find_solve(rectangles, stack):
                         correct_rectangles = e.find_correct_positions(g, i, j)
                         for rectangle in correct_rectangles:
                             h = copy.deepcopy(solve)
-                            rectangle.id = id
+                            rectangle.id = rectangle_id
                             h.append(rectangle)
                             new_field = field_update(copy.deepcopy(g),
                                                      rectangle)
@@ -137,14 +143,14 @@ def find_solve(rectangles, stack):
     return result
 
 
-def print_solve(field, solve):
+def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle]):
     for r in solve:
         for i in range(r.height):
             for j in range(r.width):
                 field[r.pos_i + i][r.pos_j + j] = str(r.id)
     temp = alignment_solve(field)
     result = [' '.join(s) for s in temp]
-    print('\n'.join(result))
+    return '\n'.join(result)
 
 
 def alignment_solve(tmp):
@@ -165,7 +171,9 @@ if __name__ == '__main__':
         figures = get_rectangles(puzzle)
         solves = find_solve(figures, [(puzzle, [])])
         for s in solves:
-            print_solve(copy.deepcopy(puzzle), s)
+            print(prepare_to_print_solve(copy.deepcopy(puzzle), s))
+        if len(solves) == 0:
+            print('Field has not solve')
         file.close()
     except FileNotFoundError:
         print('File with field is not found')
