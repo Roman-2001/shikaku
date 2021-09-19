@@ -3,6 +3,7 @@ from typing import List, Dict, Tuple
 
 
 class Rectangle:
+    """Class of objects, which break up field"""
     def __init__(self, square, height, width, correct_i=0, correct_j=0):
         self.square = square
         self.height = height
@@ -27,6 +28,8 @@ class Rectangle:
         return h_is_eq and w_is_eq and i_is_eq and j_is_eq
 
     def is_correct(self, field, x, y) -> bool:
+        """Check correctness of the rectangle in field
+        on position (x,y)"""
         digit = True
         for i in range(self.height):
             if i + x >= len(field) or i + x < 0:
@@ -44,6 +47,8 @@ class Rectangle:
         return True
 
     def find_correct_positions(self, field: list, i: int, j: int):
+        """find all positions, where the rectangle is correct
+        and returns rectangles with correct positions"""
         result = []
         for k in range(-self.height + 1, 1):
             for m in range(-self.width + 1, 1):
@@ -55,6 +60,7 @@ class Rectangle:
 
 
 def field_is_correct(field: List[List[str]]):
+    """check that the field is rectangular"""
     width = -1
     for i in range(len(field)):
         if width == -1:
@@ -66,6 +72,8 @@ def field_is_correct(field: List[List[str]]):
 
 
 def field_update(field: List[List[str]], rectangle: Rectangle):
+    """change field`s components to '+' on all positions
+    of the rectangle"""
     width, height = rectangle.width, rectangle.height
     i = rectangle.pos_i
     j = rectangle.pos_j
@@ -76,6 +84,8 @@ def field_update(field: List[List[str]], rectangle: Rectangle):
 
 
 def has_digit(field):
+    """check that the field has digit
+    (if field has not digit then it is solved or has not solve)"""
     for i in range(len(field)):
         for j in range(len(field[i])):
             if field[i][j].isdigit():
@@ -93,6 +103,7 @@ def is_solved(field):
 
 def get_rectangles(field: List[List[str]])\
         -> Dict[int, List[Rectangle]]:
+    """get all possible rectangles on this field"""
     rectangles = {}
     if type(field[0]) is list:
         width = len(field[0])
@@ -111,6 +122,9 @@ def get_rectangles(field: List[List[str]])\
 def find_solve(rectangles: Dict[int, List[Rectangle]],
                stack: List[Tuple[List[List[str]], list]])\
         -> List[List[Rectangle]]:
+    """use to brute-force algorithm to
+    find all solves on this field;
+    stack is tuple of current field and current solve"""
     result = []
     while stack:
         g, solve = stack.pop(0)
@@ -145,6 +159,7 @@ def find_solve(rectangles: Dict[int, List[Rectangle]],
 
 def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle])\
         -> str:
+    """form understandable solve`s output"""
     for r in solve:
         for i in range(r.height):
             for j in range(r.width):
@@ -155,6 +170,7 @@ def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle])\
 
 
 def alignment_solve(tmp: List[List[str]]) -> List[List[str]]:
+    """aligns understandable solve`s output"""
     for j in range(1, len(tmp[0]) + 1):
         size = len(tmp[-1][-j])
         for i in range(2, len(tmp) + 1):

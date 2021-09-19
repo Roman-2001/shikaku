@@ -20,7 +20,7 @@ class MyTestCase(unittest.TestCase):
 
     def test_generate_solution(self):
         h, w = 1, 1
-        self.assertEqual(generator.generate_solution(h, w), [(1, 0, 0)])
+        self.assertEqual(generator.generate_field(h, w), [(1, 0, 0)])
 
 
 if __name__ == '__main__':

@@ -3,8 +3,9 @@ import random
 import solver.solution as solution
 
 
-def generate_solution(height: int, width: int)\
+def generate_field(height: int, width: int)\
         -> List[Tuple[int, int, int]]:
+    """choose numbers and its positions randomly"""
     field = [['-' for j in range(width)] for i in range(height)]
     available_square = height*width
     all_rectangles = [solution.Rectangle((i+1)*(j+1), i+1, j+1)
@@ -33,18 +34,26 @@ def generate_solution(height: int, width: int)\
 
 def make_field(solve: List[Tuple[int, int, int]],
                height: int, width: int) -> List[List[str]]:
+    """set numbers for positions in field"""
     field = [['-' for i in range(width)] for j in range(height)]
     for t in solve:
         sq, i, j = t
         field[i][j] = str(sq)
     return field
 
-#
-# if __name__ == '__main__':
-#     s = generate_solution(5, 5)
-#     f = make_field(s, 5, 5)
-#     print(f)
-#     rect = solution.get_rectangles(f)
-#     solves = solution.find_solve(rect, [(f, [])])
-#     for sol in solves:
-#         print(solution.prepare_to_print_solve(f, sol))
+
+if __name__ == '__main__':
+    h, w = 1, 1
+    try:
+        h = int(input('Enter height: '))
+        w = int(input('Enter width: '))
+    except ValueError as e:
+        h, w = 1, 1
+        print(f'{e} is not number\nheight = 1, width = 1 on default')
+    s = generate_field(h, w)
+    f = make_field(s, h, w)
+    print(f)
+    rect = solution.get_rectangles(f)
+    solves = solution.find_solve(rect, [(f, [])])
+    for sol in solves:
+        print(solution.prepare_to_print_solve(f, sol))
