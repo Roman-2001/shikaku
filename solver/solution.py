@@ -14,10 +14,10 @@ class Rectangle:
     def __str__(self) -> str:
         return f'{self.square}, {self.height}, {self.width}, ' \
                f'{self.pos_i}, {self.pos_j}'
-    #
-    # def __repr__(self) -> str:
-    #     return f'{self.height},{self.width}; {self.id}' \
-    #            f':({self.pos_i}, {self.pos_j})'
+
+    def __repr__(self) -> str:
+        return f'{self.height},{self.width}; {self.id}' \
+               f':({self.pos_i}, {self.pos_j})'
 
     def __eq__(self, other) -> bool:
         h_is_eq = self.height == other.height
@@ -143,7 +143,8 @@ def find_solve(rectangles: Dict[int, List[Rectangle]],
     return result
 
 
-def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle]):
+def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle])\
+        -> str:
     for r in solve:
         for i in range(r.height):
             for j in range(r.width):
@@ -153,7 +154,7 @@ def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle]):
     return '\n'.join(result)
 
 
-def alignment_solve(tmp):
+def alignment_solve(tmp: List[List[str]]) -> List[List[str]]:
     for j in range(1, len(tmp[0]) + 1):
         size = len(tmp[-1][-j])
         for i in range(2, len(tmp) + 1):
