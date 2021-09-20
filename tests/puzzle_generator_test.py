@@ -1,5 +1,5 @@
 import unittest
-from solver.solution import Rectangle
+import solver.solution as slt
 import solver.puzzle_generator as generator
 
 

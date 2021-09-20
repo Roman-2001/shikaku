@@ -113,6 +113,10 @@ class TestSolution(unittest.TestCase):
         s[1].id = 1
         self.assertEqual(expected_ans, solution.prepare_to_print_solve(f, s))
 
+    def test_main(self):
+        self.assertEqual('Field is not rectangular', solution.main('bad_field.txt'))
+        self.assertEqual('File with field is not found', solution.main('1.txt'))
+
 
 if __name__ == '__main__':
     unittest.main()

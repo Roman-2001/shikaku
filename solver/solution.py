@@ -85,7 +85,7 @@ def field_update(field: List[List[str]], rectangle: Rectangle):
 
 def has_digit(field):
     """check that the field has digit
-    (if field has not digit then it is solved or has not solve)"""
+    (if field has not digit then it is solved or has not solution)"""
     for i in range(len(field)):
         for j in range(len(field[i])):
             if field[i][j].isdigit():
@@ -123,7 +123,7 @@ def find_solve(rectangles: Dict[int, List[Rectangle]],
                stack: List[Tuple[List[List[str]], list]])\
         -> List[List[Rectangle]]:
     """use to brute-force algorithm to
-    find all solves on this field;
+    find all solutions on this field;
     stack is tuple of current field and current solve"""
     result = []
     while stack:
@@ -131,9 +131,6 @@ def find_solve(rectangles: Dict[int, List[Rectangle]],
         rectangle_id = len(solve)
         if not has_digit(g):
             if is_solved(g):
-                # print(g)
-                # print(is_solved(g))
-                # print(solve)
                 result.append(solve)
         for i in range(len(g)):
             for j in range(len(g[i])):
@@ -159,7 +156,7 @@ def find_solve(rectangles: Dict[int, List[Rectangle]],
 
 def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle])\
         -> str:
-    """form understandable solve`s output"""
+    """form understandable solution`s output"""
     for r in solve:
         for i in range(r.height):
             for j in range(r.width):
@@ -170,7 +167,7 @@ def prepare_to_print_solve(field: List[List[str]], solve: List[Rectangle])\
 
 
 def alignment_solve(tmp: List[List[str]]) -> List[List[str]]:
-    """aligns understandable solve`s output"""
+    """aligns understandable solution`s output"""
     for j in range(1, len(tmp[0]) + 1):
         size = len(tmp[-1][-j])
         for i in range(2, len(tmp) + 1):
@@ -179,20 +176,29 @@ def alignment_solve(tmp: List[List[str]]) -> List[List[str]]:
     return tmp
 
 
-if __name__ == '__main__':
+def main(file='in.txt'):
     try:
-        file = open('in.txt', 'r')
-        puzzle = [s.split(' ') for s in file.read().split('\n')]
+        f = open(file, 'r')
+        puzzle = [s.split(' ') for s in f.read().split('\n')]
         if not field_is_correct(puzzle):
+            f.close()
             raise Warning
         figures = get_rectangles(puzzle)
         solves = find_solve(figures, [(puzzle, [])])
+        result = ''
         for s in solves:
-            print(prepare_to_print_solve(copy.deepcopy(puzzle), s))
+            result = result + \
+                     prepare_to_print_solve(copy.deepcopy(puzzle),
+                                            s) + '\n'
         if len(solves) == 0:
-            print('Field has not solve')
-        file.close()
+            return 'Field has not solve'
+        f.close()
+        return result
     except FileNotFoundError:
-        print('File with field is not found')
+        return 'File with field is not found'
     except Warning:
-        print('Field is not rectangular')
+        return 'Field is not rectangular'
+
+
+if __name__ == '__main__':
+    print(main())

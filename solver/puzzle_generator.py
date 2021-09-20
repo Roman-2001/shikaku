@@ -1,5 +1,6 @@
 from typing import List, Tuple
 import random
+# import solution
 import solver.solution as solution
 
 
@@ -50,10 +51,13 @@ if __name__ == '__main__':
     except ValueError as e:
         h, w = 1, 1
         print(f'{e} is not number\nheight = 1, width = 1 on default')
-    s = generate_field(h, w)
-    f = make_field(s, h, w)
-    print(f)
+    tmp_field = generate_field(h, w)
+    f = make_field(tmp_field, h, w)
+    print('generated field:')
+    print('\n'.join([' '.join(s) for s in f]))
     rect = solution.get_rectangles(f)
     solves = solution.find_solve(rect, [(f, [])])
-    for sol in solves:
-        print(solution.prepare_to_print_solve(f, sol))
+    print('found solutions:')
+    for s in solves:
+        print(solution.prepare_to_print_solve(f, s))
+        print()
